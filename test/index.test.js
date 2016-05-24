@@ -5,6 +5,7 @@ var integration = require('analytics.js-integration');
 var sandbox = require('clear-env');
 var tester = require('analytics.js-integration-tester');
 var Pendo = require('../lib/');
+var _ = require('underscore');
 
 // var noop = function() {};
 
@@ -123,6 +124,24 @@ describe('Pendo', function() {
         analytics.group('id', { trait: 'goog' });
         analytics.called(window.pendo.identify);
         analytics.assert(window.pendo_options.account.trait === 'goog');
+        analytics.equal(window.pendo.getAccountId(), 'id');
+      });
+
+      it('should send an id and obj traits', function() {
+        var traits = {
+          sysId: 30,
+          sysName: 'Mocha test',
+          sysTrialStatus: 'Robot',
+          sysProduct: 'unlimited',
+          sysType: 'unknown'
+        };
+        analytics.group('id', traits);
+        analytics.called(window.pendo.identify);
+
+        _.forEach(traits, function(value, key) {
+          analytics.assert(window.pendo_options.account[key] === value);
+        });
+
         analytics.equal(window.pendo.getAccountId(), 'id');
       });
     });
